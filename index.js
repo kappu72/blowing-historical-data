@@ -36,7 +36,7 @@ fastify.get('/station/:id/hourly', function (req, reply) {
   db.collection(req.params.id + "_hourly", onCollection)
   function onCollection(err, col) {
     if (err) return reply.send(err)
-    col.find({}, { sort: { _id: -1 } }).toArray((err, values) => {
+    col.find({}, { sort: { _id: 1 } }).toArray((err, values) => {
       reply.send(values)
     })
   }
