@@ -7,3 +7,4 @@ node_modules/
 .settings/
 .vscode/settings.json
 .DS_Store
+.env

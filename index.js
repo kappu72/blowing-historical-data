@@ -1,5 +1,9 @@
+const aggregateRain = require('./aggregateHydroData');
 const date = require('date-and-time');
 const config = require('./config');
+
+
+console.log(config);
 
 const fastify = require('fastify')({
   logger: config.debug,
@@ -66,7 +70,22 @@ fastify.get('/station/:id/lastmax', function (req, reply) {
   }
 })
 
+fastify.get('/station/:id/hydro', function (req, reply) {
 
+  
+  const db = this.mongo.db
+  db.collection(req.params.id, onCollection)
+  function onCollection(err, col) {
+    if (err) return reply.send(err)
+    aggregateRain(col).subscribe(values => {
+        console.log(values)
+        reply.send(JSON.stringify(values))
+    }, error => {
+      reply.send(error)
+    });
+  }   
+    
+})
 
 fastify.listen(config.fastify.port, config.fastify.address, err => {
   if (err) throw err
