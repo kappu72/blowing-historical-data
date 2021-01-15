@@ -90,3 +90,18 @@ fastify.get('/station/:id/hydro', function (req, reply) {
 fastify.listen(config.fastify.port, config.fastify.address, err => {
   if (err) throw err
 })
+
+
+fastify.get('/station/:id/idrometro', function (req, reply) {
+
+  const db = this.mongo.db
+  db.collection(req.params.id, onCollection)
+  function onCollection(err, col) {
+    if (err) return reply.send(err)
+    const time = date.format(date.addYears(new Date, -2), "YYYY-MM-DDTHH:mm:ss", true);
+
+    col.find({ time: { $gte: time } }, { sort: { "time": -1 } }).toArray((err, values) => {
+      reply.send(values)
+    })
+  }
+})
