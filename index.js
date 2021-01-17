@@ -95,12 +95,12 @@ fastify.listen(config.fastify.port, config.fastify.address, err => {
 fastify.get('/station/:id/idrometro', function (req, reply) {
 
   const db = this.mongo.db
-  db.collection(req.params.id+ "_hourly", onCollection)
+  db.collection(req.params.id + "_hourly", onCollection)
   function onCollection(err, col) {
     if (err) return reply.send(err)
     const time = date.format(date.addYears(new Date, -1), "YYYY-MM-DDTHH:mm:ss", true);
 
-    col.find({ time: { $gte: time } }, { sort: { "time": 1 } }).toArray((err, values) => {
+    col.find({ _id: { $gte: time } }, { sort: { "time": 1 } }).toArray((err, values) => {
       reply.send(values)
     })
   }
