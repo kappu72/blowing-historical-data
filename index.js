@@ -86,6 +86,22 @@ fastify.get('/station/:id/hydro', function (req, reply) {
   }   
     
 })
+fastify.get('/station/:id/hydroV2', function (req, reply) {
+
+  
+  const db = this.mongo.db
+  db.collection(req.params.id, onCollection)
+  function onCollection(err, col) {
+    if (err) return reply.send(err)
+    aggregateRain(col, 1).subscribe(values => {
+        console.log(values)
+        reply.send(JSON.stringify(values))
+    }, error => {
+      reply.send(error)
+    });
+  }   
+    
+})
 
 fastify.listen(config.fastify.port, config.fastify.address, err => {
   if (err) throw err
