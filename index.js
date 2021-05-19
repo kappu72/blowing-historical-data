@@ -18,20 +18,30 @@ fastify.register(require('fastify-mongodb'), {
   url: 'mongodb://' + config.mongodb.hostname + ':' + config.mongodb.port
 })
 
-fastify.get('/station/:id/last', function (req, reply) {
-
-  
+fastify.get('/station/:id/last/:delta', function (req, reply) {
+  let delta = parseInt(req.params.delta) || 1
   const db = this.mongo.db
-  db.collection(req.params.id, onCollection)
+  getLastResponse(db, reply, req.params.id, delta)
+  
+})
+
+fastify.get('/station/:id/last', function (req, reply) {
+  const db = this.mongo.db
+  getLastResponse(db, reply, req.params.id)
+  
+})
+
+function getLastResponse(db, reply, id, delta = 1) {
+  db.collection(id, onCollection)
   function onCollection(err, col) {
     if (err) return reply.send(err)
-    const time = date.format(date.addHours(new Date, -1), "YYYY-MM-DDTHH:mm:ss", true);
+    const time = date.format(date.addHours(new Date, -delta), "YYYY-MM-DDTHH:mm:ss", true);
 
     col.find({ time: { $gte: time } }, { sort: { "time": -1 } }).toArray((err, values) => {
       reply.send(values)
     })
   }
-})
+}
 
 fastify.get('/station/:id/hourly', function (req, reply) {
 
